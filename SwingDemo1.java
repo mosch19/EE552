@@ -1,21 +1,36 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.Event;
+import java.awt.event.*;
 
-class SwingDemo1 {
-    public static void main(String args[]) {
-        JFrame f = new JFrame();
+class SwingDemo1 extends JFrame {
+
+    public SwingDemo1(String title, Color bg, int w, int h) {
+        this.setSize(w, h);
+        this.setTitle(title);
+        
         JButton j = new JButton("Ok");
-        Container c = f.getContentPane();
-        c.add(BorderLayout.NORTH, j);
         j.addActionListener(new myListener());
-        f.setSize(1000, 700);
-        f.setVisible(true);
+
+        JButton j2 = new JButton("What");
+        j2.addActionListener(new myListener());
+
+        Container c = this.getContentPane();
+        c.add(BorderLayout.NORTH, j);
+        c.add(BorderLayout.EAST, j2);
+        c.setBackground(bg);
+
+        this.setVisible(true);
+    }
+
+
+    public static void main(String args[]) {
+        new SwingDemo1("Title", Color.BLUE, 800, 600);
+        new SwingDemo1("Cool", Color.RED, 800, 600);
     }
 }
 
 class myListener implements ActionListener {
-    public static void actionPerformed(ActionEvent e) {
-        
+    public void actionPerformed(ActionEvent e) {
+        System.out.print("Yo");
     }
 };
