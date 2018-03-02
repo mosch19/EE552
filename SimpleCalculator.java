@@ -1,3 +1,7 @@
+/*
+    Author: Michael Moschetti
+    Reference: https://www.wikihow.com/Close-a-Window-in-Java
+*/
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -12,8 +16,6 @@ class SimpleCalculator extends JFrame {
             }
         });
         Container c = getContentPane();
-        
-        Font f = new Font("Helvetica", Font.BOLD, 32);
         
         JPanel buttons = new JPanel();
         buttons.setLayout(new GridLayout(5, 4, 5, 10));
