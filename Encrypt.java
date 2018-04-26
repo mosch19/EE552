@@ -40,12 +40,13 @@ class Encrypt extends JFrame {
         shiftFactor = new JSpinner();
         JButton encrypt = new JButton("Encrypt");
         JButton indexed = new JButton("Index Shift");
+        JButton emojiShift = new JButton("Emoji");
         JButton bruteForce = new JButton("Brute Force");
-        JButton emojiShift = new JButton("Emoji Shift");
+        
         encrypt.addActionListener(new myListener());
         indexed.addActionListener(new myListener());
-        bruteForce.addActionListener(new myListener());
         emojiShift.addActionListener(new myListener());
+        bruteForce.addActionListener(new myListener());
 
         options.add(shiftFactor);
         options.add(encrypt);
@@ -84,9 +85,11 @@ class Encrypt extends JFrame {
         text.add(cypherText);
         text.add(emojiText);
 
-        c.add(options, BorderLayout.NORTH);
-        c.add(text, BorderLayout.CENTER);
+        JScrollPane scrollPane = new JScrollPane(text);
 
+        c.add(options, BorderLayout.NORTH);
+        c.add(scrollPane, BorderLayout.CENTER);
+        setMinimumSize(new Dimension(400, 400));
         setVisible(true);
     }
 
@@ -205,7 +208,6 @@ class Emoji {
         } else {
             result = (c - indexChar) + shiftFactor;
         }
-        System.out.println(result);
         return result;
     }
 
