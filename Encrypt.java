@@ -6,6 +6,7 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.nio.charset.Charset;
 import java.util.concurrent.TimeUnit;
 
 class Encrypt extends JFrame {
@@ -13,6 +14,8 @@ class Encrypt extends JFrame {
     public JTextArea plainText;
     
     public JTextArea cypherText;
+
+    public JTextArea emojiText;
 
     private JSpinner shiftFactor;
 
@@ -27,7 +30,8 @@ class Encrypt extends JFrame {
             }
         });
 
-        Font font = new Font("Helvetica", Font.PLAIN, 16);
+        Font font = new Font("Helvetica", Font.PLAIN, 24);
+        Font emojiFont = new Font("EmojiOne Color", Font.PLAIN, 30);
 
         Container c = getContentPane();
         JPanel options = new JPanel();
@@ -37,17 +41,20 @@ class Encrypt extends JFrame {
         JButton encrypt = new JButton("Encrypt");
         JButton indexed = new JButton("Index Shift");
         JButton bruteForce = new JButton("Brute Force");
+        JButton emojiShift = new JButton("Emoji Shift");
         encrypt.addActionListener(new myListener());
         indexed.addActionListener(new myListener());
         bruteForce.addActionListener(new myListener());
+        emojiShift.addActionListener(new myListener());
 
         options.add(shiftFactor);
         options.add(encrypt);
         options.add(indexed);
         options.add(bruteForce);
+        options.add(emojiShift);
 
         JPanel text = new JPanel();
-        text.setLayout(new GridLayout(1, 2, 5, 10));
+        text.setLayout(new GridLayout(1, 3, 5, 10));
 
         plainText = new JTextArea("Plain text...");
         plainText.setLineWrap(true);
@@ -65,8 +72,17 @@ class Encrypt extends JFrame {
         cypherText.setCaretColor(Color.DARK_GRAY);
         cypherText.setFont(font);
 
+        emojiText = new JTextArea(Emoji.baseString());
+        emojiText.setLineWrap(true);
+        emojiText.setWrapStyleWord(true);
+        emojiText.setForeground(Color.WHITE);
+        emojiText.setBackground(Color.DARK_GRAY);
+        emojiText.setCaretColor(Color.WHITE);
+        emojiText.setFont(emojiFont);
+
         text.add(plainText);
         text.add(cypherText);
+        text.add(emojiText);
 
         c.add(options, BorderLayout.NORTH);
         c.add(text, BorderLayout.CENTER);
@@ -99,6 +115,16 @@ class Encrypt extends JFrame {
                 case "Brute Force":
                     BruteThread bruteThread = new BruteThread(cypherText.getText().toCharArray());
                     bruteThread.start();
+                    break;
+                case "Emoji Shift":
+                    String emoji = "";
+                    Emoji temp1 = null;
+                    temp = plainText.getText().toCharArray();
+                    for(int i = 0; i < temp.length; i++) {
+                        temp1 = new Emoji(temp[i], (int) shiftFactor.getValue());
+                        emoji += temp1.toString();
+                    }
+                    emojiText.setText(emoji);
                     break;
                 default:
                     System.out.println("What");
@@ -141,6 +167,50 @@ class Encrypt extends JFrame {
                 }
             }
         }
+    }
+
+}
+
+class Emoji {
+    
+    private static final byte[] base = new byte[] { (byte) 0xF0, (byte) 0x9F, (byte) 0x98, (byte) 0x81 };
+
+    private static final char indexChar = ' ';
+
+    private int shiftFactor;
+
+    private byte[] val;
+
+    Emoji(char c, int shiftFactor) {
+        this.shiftFactor = shiftFactor;
+        this.val = new byte[base.length];
+        System.arraycopy(base, 0, this.val, 0, base.length);
+        shift(getFactor(c));
+    }
+
+    public static String baseString() {
+        return new String(base, Charset.forName("UTF-8"));
+    }
+
+    public String toString() {
+        return new String(this.val, Charset.forName("UTF-8"));
+    }
+
+    private int getFactor(char c) {
+        int result;
+        if(((c - indexChar) + shiftFactor) > 62) {
+            result = (c - indexChar) + shiftFactor - 63;
+        } else if((c - indexChar) + shiftFactor < 0) {
+            result = 63 - (c + indexChar);
+        } else {
+            result = (c - indexChar) + shiftFactor;
+        }
+        System.out.println(result);
+        return result;
+    }
+
+    private void shift(int factor) {
+        this.val[3] += factor;
     }
 
 }
