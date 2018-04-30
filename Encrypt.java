@@ -82,7 +82,7 @@ class Encrypt extends JFrame {
         emojiText.setForeground(Color.WHITE);
         emojiText.setBackground(Color.DARK_GRAY);
         emojiText.setCaretColor(Color.WHITE);
-        emojiText.setFont(emojiFont);
+        emojiText.setFont(font);
 
         text.add(plainText);
         text.add(cypherText);
