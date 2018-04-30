@@ -233,6 +233,18 @@ class Emoji {
         return new String(base, Charset.forName("UTF-8"));
     }
 
+    /*
+    Be able to parse out unicode characters so they can be encrypted/decrpyted in the main windows with text.
+    public static boolean isEmoji(char c) {
+        String result = "\\u" + Integer.toHexString(c | 0x10000).substring(1);
+        if result == unicode range {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    */
+
     public String toString() {
         return new String(this.val, Charset.forName("UTF-8"));
     }
