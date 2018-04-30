@@ -3,6 +3,9 @@
 * Try adding XOR ing with different chipping sequence.
 */
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -40,7 +43,7 @@ class Encrypt extends JFrame {
         shiftFactor = new JSpinner();
         JButton encrypt = new JButton("Encrypt");
         JButton indexed = new JButton("Index Shift");
-        JButton emojiShift = new JButton("Emoji");
+        JButton emojiShift = new JButton("Emoji-Crypt™");
         JButton bruteForce = new JButton("Brute Force");
         
         encrypt.addActionListener(new myListener());
@@ -68,9 +71,9 @@ class Encrypt extends JFrame {
         cypherText = new JTextArea("Cypher text...");
         cypherText.setLineWrap(true);
         cypherText.setWrapStyleWord(true);
-        cypherText.setForeground(Color.DARK_GRAY);
-        cypherText.setBackground(Color.WHITE);
-        cypherText.setCaretColor(Color.DARK_GRAY);
+        cypherText.setForeground(Color.GREEN);
+        cypherText.setBackground(Color.BLACK);
+        cypherText.setCaretColor(Color.GREEN);
         cypherText.setFont(font);
 
         emojiText = new JTextArea(Emoji.baseString());
@@ -97,6 +100,23 @@ class Encrypt extends JFrame {
         new Encrypt();
     }
 
+    public static boolean check_for_word(String word) {
+        try {
+            BufferedReader in = new BufferedReader(new FileReader(
+                    "/usr/share/dict/american-english"));
+            String str;
+            while ((str = in.readLine()) != null) {
+                if (str.indexOf(word) != -1) {
+                    return true;
+                }
+            }
+            in.close();
+        } catch (IOException e) {
+            System.out.println(e);
+        }
+        return false;
+    }
+
     class myListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             char[] temp;
@@ -119,7 +139,7 @@ class Encrypt extends JFrame {
                     BruteThread bruteThread = new BruteThread(cypherText.getText().toCharArray());
                     bruteThread.start();
                     break;
-                case "Emoji Shift":
+                case "Emoji-Crypt™":
                     String emoji = "";
                     Emoji temp1 = null;
                     temp = plainText.getText().toCharArray();
@@ -149,6 +169,7 @@ class Encrypt extends JFrame {
         }
     
         public void run() {
+            boolean found = false;
             while(guessVal < 100) {
                 ascii = false;
                 temp = original.clone();
@@ -159,15 +180,32 @@ class Encrypt extends JFrame {
                     }
                 }
                 if(ascii) {
-                    System.out.println("Is this your message? : " + temp.toString());
+                    // System.out.println("Is this your message? : " + temp.toString());
                 }
-                cypherText.setText(new String(temp));
-                guessVal++;
+                String guess = new String(temp);
+                // Will work for individual words. Not spaces though.
+                if(Encrypt.check_for_word(guess.toLowerCase())) {
+                    // Found word in dictionary
+                    cypherText.setText(guess.toLowerCase());
+                    int reply = JOptionPane.showConfirmDialog(null, "Is " + guess.toLowerCase() + " your word?", "Guess", JOptionPane.YES_NO_OPTION);
+                    if(reply == JOptionPane.YES_OPTION) {
+                        guessVal = 100;
+                        found = true;
+                    } else {
+                        guessVal++;
+                    }
+                } else {
+                    cypherText.setText(new String(temp));
+                    guessVal++;
+                }
                 try {
-                    Thread.sleep(250);
+                    Thread.sleep(30);
                 } catch(InterruptedException err) {
                     System.out.println(err);
                 }
+            }
+            if(!found) {
+                JOptionPane.showMessageDialog(null, "Could not parse out a word.");
             }
         }
     }
